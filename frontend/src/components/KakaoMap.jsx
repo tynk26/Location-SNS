@@ -24,7 +24,7 @@ function KakaoMap() {
           const map = new window.kakao.maps.Map(container, options);
 
           /*
-            🔵 현재 사용자 마커 (파란색)
+            🔵 내 위치 마커
           */
           const myMarker = new window.kakao.maps.Marker({
             position: new window.kakao.maps.LatLng(latitude, longitude),
@@ -46,35 +46,49 @@ function KakaoMap() {
             .then((res) => {
               const users = res.data;
 
-              console.log("[MAP] 근처 사용자:", users);
-
               users.forEach((user) => {
-                // 자기 자신은 제외
+                // 자기 자신 제외
                 if (user.lat === latitude && user.lng === longitude) return;
 
-                const markerPosition = new window.kakao.maps.LatLng(
+                const position = new window.kakao.maps.LatLng(
                   user.lat,
                   user.lng,
                 );
 
                 const marker = new window.kakao.maps.Marker({
-                  position: markerPosition,
+                  position,
                 });
 
                 marker.setMap(map);
 
-                const infoWindow = new window.kakao.maps.InfoWindow({
-                  content: `
-                  <div style="padding:10px;">
-                    <strong>${user.nickname}</strong><br/>
-                    ${user.bio}
+                /*
+                  🔴 RED PROFILE TEXTBOX
+                */
+                const content = `
+                  <div style="
+                    background:red;
+                    color:white;
+                    padding:8px 12px;
+                    border-radius:8px;
+                    font-size:13px;
+                    font-weight:bold;
+                    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+                    text-align:center;
+                  ">
+                    ${user.nickname}<br/>
+                    <span style="font-weight:normal;font-size:12px;">
+                      ${user.bio}
+                    </span>
                   </div>
-                `,
+                `;
+
+                const overlay = new window.kakao.maps.CustomOverlay({
+                  position,
+                  content,
+                  yAnchor: 1.8, // 위치 위로 띄움
                 });
 
-                window.kakao.maps.event.addListener(marker, "click", () => {
-                  infoWindow.open(map, marker);
-                });
+                overlay.setMap(map);
               });
             })
             .catch((err) => {

@@ -46,8 +46,8 @@ function App() {
 
       // 🔧 개발용 랜덤 오프셋 (200~400m 이동)
       if (window.location.search.includes("dev=true")) {
-        latitude += (Math.random() - 0.5) * 0.004;
-        longitude += (Math.random() - 0.5) * 0.004;
+        latitude += (Math.random() - 0.5) * 0.008;
+        longitude += (Math.random() - 0.5) * 0.008;
       }
 
       axios
