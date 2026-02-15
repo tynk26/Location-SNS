@@ -65,9 +65,14 @@ function App() {
     });
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // Static chat messages
+  const chatMessages = [
+    { from: "Jessica", message: "안녕 Michael! 오늘 기분 어때?" },
+    { from: "Michael", message: "안녕 Jessica! 나는 좋아, 너는?" },
+    { from: "Jessica", message: "나도 좋아. 오늘 맵 테스트 해볼래?" },
+    { from: "Michael", message: "좋아, 내 위치 보내줄게." },
+    { from: "Jessica", message: "완벽해 😄" },
+  ];
 
   return (
     <div
@@ -167,17 +172,25 @@ function App() {
             </>
           )}
 
+          {/* File input */}
           <input
             type="file"
             onChange={(e) => setAvatar(e.target.files[0])}
             accept="image/*"
-            style={{ marginBottom: "10px" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              marginBottom: "10px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+            }}
           />
 
+          {/* Register button full width and red */}
           <button
             onClick={registerUser}
             style={{
-              width: "100%",
+              width: "20%",
               padding: "10px",
               backgroundColor: "#ff385c",
               color: "white",
@@ -195,7 +208,7 @@ function App() {
 
         {/* Top Left Users List */}
         <div>
-          <h3>등록된 사용자</h3>
+          <h3>주변 사용자</h3>
           {users.map((user) => (
             <div
               key={user.id}
@@ -251,18 +264,74 @@ function App() {
         <KakaoMap currentUserId={currentUserId} />
       </div>
 
-      {/* Right Half (full height) */}
+      {/* Right Half: Static Chat */}
       <div
         style={{
           gridColumn: "2 / 3",
           gridRow: "1 / 3",
           padding: "20px",
-          overflowY: "auto",
           backgroundColor: "#f9f9f9",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "auto",
         }}
       >
-        <h2>SNS Feed / Chat / Notifications</h2>
-        <p>여기에 SNS 기능 확장 가능 (좋아요, 채팅 등)</p>
+        <h2>💬 Chat</h2>
+        <div style={{ flex: 1, overflowY: "auto", marginBottom: "10px" }}>
+          {[
+            { from: "Jessica", message: "안녕 Michael! 오늘 기분 어때?" },
+            { from: "Michael", message: "안녕 Jessica! 나는 좋아, 너는?" },
+            { from: "Jessica", message: "나도 좋아. 오늘 맵 테스트 해볼래?" },
+            { from: "Michael", message: "좋아, 내 위치 보내줄게." },
+            { from: "Jessica", message: "완벽해 😄" },
+          ].map((msg, idx) => (
+            <div
+              key={idx}
+              style={{
+                display: "flex",
+                justifyContent:
+                  msg.from === "Jessica" ? "flex-start" : "flex-end",
+                marginBottom: "8px",
+              }}
+            >
+              <div
+                style={{
+                  background: msg.from === "Jessica" ? "#e5e5ea" : "#ff385c",
+                  color: msg.from === "Jessica" ? "#000" : "#fff",
+                  padding: "8px 12px",
+                  borderRadius: "15px",
+                  maxWidth: "70%",
+                  wordBreak: "break-word",
+                }}
+              >
+                <strong>{msg.from}:</strong> {msg.message}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <input
+          placeholder="메시지 입력"
+          style={{
+            padding: "8px",
+            borderRadius: "10px",
+            border: "1px solid #ccc",
+          }}
+          disabled
+        />
+        <button
+          style={{
+            marginTop: "5px",
+            padding: "10px",
+            backgroundColor: "#ccc",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "not-allowed",
+          }}
+          disabled
+        >
+          보내기
+        </button>
       </div>
     </div>
   );
