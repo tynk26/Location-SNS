@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-
+const multer = require("multer");
+const path = require("path");
+const upload = multer({ dest: path.join(__dirname, "uploads/") });
 const app = express();
 const PORT = 5000;
 
@@ -47,20 +49,42 @@ app.get("/api/health", (req, res) => {
 /*
   Register User
 */
-app.post("/api/users", (req, res) => {
+// 기존 app.post("/api/users") 대체
+app.post("/api/users", upload.single("avatar"), (req, res) => {
   const { nickname, bio, lat, lng } = req.body;
-  console.log("[SERVER] New user received:", req.body);
+  const avatarFile = req.file;
+
   const newUser = {
-    id: Date.now(),
+    id: users.length + 1,
     nickname,
     bio,
-    lat,
-    lng,
+    lat: parseFloat(lat),
+    lng: parseFloat(lng),
+    avatar: avatarFile
+      ? `/uploads/${avatarFile.filename}`
+      : "https://via.placeholder.com/50",
   };
 
   users.push(newUser);
   res.json(newUser);
 });
+
+// 정적 파일 제공
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.post("/api/users", (req, res) => {
+//   const { nickname, bio, lat, lng } = req.body;
+//   console.log("[SERVER] New user received:", req.body);
+//   const newUser = {
+//     id: Date.now(),
+//     nickname,
+//     bio,
+//     lat,
+//     lng,
+//   };
+
+//   users.push(newUser);
+//   res.json(newUser);
+// });
 
 /*
   Get All Users
@@ -97,6 +121,25 @@ app.get("/api/users/nearby", (req, res) => {
   res.json(nearbyUsers);
 });
 
+const likes = []; // { fromId, toId }
+
+// 좋아요 등록 엔드포인트
+app.post("/api/like", (req, res) => {
+  const { fromId, toId } = req.body;
+  if (!fromId || !toId) return res.status(400).json({ error: "Missing IDs" });
+
+  // 중복 방지
+  if (!likes.find((l) => l.fromId === fromId && l.toId === toId)) {
+    likes.push({ fromId, toId });
+  }
+
+  res.json({ success: true });
+});
+
+// 좋아요 확인 엔드포인트 (optional)
+app.get("/api/likes", (req, res) => {
+  res.json(likes);
+});
 app.listen(PORT, () => {
   console.log(`[SERVER] Running on http://localhost:${PORT}`);
 });
