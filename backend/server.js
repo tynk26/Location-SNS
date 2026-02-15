@@ -12,6 +12,7 @@ app.use(express.json());
   Later → DB (Mongo/Postgres)
 */
 let users = [];
+let nearbyUsers = [];
 /*
   Haversine Formula
   Returns distance in meters

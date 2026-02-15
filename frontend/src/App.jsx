@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import KakaoMap from "./components/KakaoMap";
 
 function App() {
   const [nickname, setNickname] = useState("");
@@ -95,6 +96,8 @@ function App() {
           📍 {user.lat}, {user.lng}
         </div>
       ))}
+      <h3>지도</h3>
+      <KakaoMap />
     </div>
   );
 }
