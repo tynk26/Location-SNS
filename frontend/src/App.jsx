@@ -8,60 +8,54 @@ function App() {
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState("");
 
+  const [useGPS, setUseGPS] = useState(true);
+  const [latInput, setLatInput] = useState("");
+  const [lngInput, setLngInput] = useState("");
+
   const registerUser = () => {
     if (!nickname) {
       alert("닉네임 입력하세요");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
+    if (useGPS) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
 
-        console.log("[FRONTEND] 위치:", latitude, longitude);
+          sendUser(latitude, longitude);
+        },
+        (error) => {
+          alert("위치 권한 허용 필요");
+        },
+      );
+    } else {
+      if (!latInput || !lngInput) {
+        alert("좌표 입력하세요");
+        return;
+      }
 
-        axios
-          .post("http://localhost:5000/api/users", {
-            nickname,
-            bio,
-            lat: latitude,
-            lng: longitude,
-          })
-          .then((res) => {
-            console.log("[FRONTEND] 사용자 등록:", res.data);
-            setStatus("등록 완료");
-            fetchUsers();
-          });
-      },
-      (error) => {
-        console.error(error);
-        alert("위치 권한 허용 필요");
-      },
-    );
+      sendUser(parseFloat(latInput), parseFloat(lngInput));
+    }
+  };
+
+  const sendUser = (lat, lng) => {
+    axios
+      .post("http://localhost:5000/api/users", {
+        nickname,
+        bio,
+        lat,
+        lng,
+      })
+      .then((res) => {
+        setStatus("등록 완료");
+        fetchUsers();
+      });
   };
 
   const fetchUsers = () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      let { latitude, longitude } = position.coords;
-
-      // 🔧 개발용 랜덤 오프셋 (200~400m 이동)
-      if (window.location.search.includes("dev=true")) {
-        latitude += (Math.random() - 0.5) * 0.008;
-        longitude += (Math.random() - 0.5) * 0.008;
-      }
-
-      axios
-        .get("http://localhost:5000/api/users/nearby", {
-          params: {
-            lat: latitude,
-            lng: longitude,
-            radius: 1000,
-          },
-        })
-        .then((res) => {
-          console.log("[FRONTEND] 근처 사용자:", res.data);
-          setUsers(res.data);
-        });
+    axios.get("http://localhost:5000/api/users").then((res) => {
+      setUsers(res.data);
     });
   };
 
@@ -74,6 +68,7 @@ function App() {
       <h1>Location SNS MVP</h1>
 
       <h3>사용자 등록</h3>
+
       <input
         placeholder="닉네임"
         value={nickname}
@@ -81,6 +76,7 @@ function App() {
       />
       <br />
       <br />
+
       <input
         placeholder="소개"
         value={bio}
@@ -88,7 +84,38 @@ function App() {
       />
       <br />
       <br />
-      <button onClick={registerUser}>내 위치로 등록</button>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={useGPS}
+          onChange={() => setUseGPS(!useGPS)}
+        />
+        GPS 사용
+      </label>
+
+      {!useGPS && (
+        <>
+          <br />
+          <br />
+          <input
+            placeholder="위도 (Latitude)"
+            value={latInput}
+            onChange={(e) => setLatInput(e.target.value)}
+          />
+          <br />
+          <br />
+          <input
+            placeholder="경도 (Longitude)"
+            value={lngInput}
+            onChange={(e) => setLngInput(e.target.value)}
+          />
+        </>
+      )}
+
+      <br />
+      <br />
+      <button onClick={registerUser}>등록</button>
 
       <p>{status}</p>
 
@@ -97,11 +124,15 @@ function App() {
       <h3>등록된 사용자</h3>
       {users.map((user) => (
         <div key={user.id} style={{ marginBottom: 10 }}>
-          <strong>{user.nickname}</strong> <br />
-          {user.bio} <br />
+          <strong>{user.nickname}</strong>
+          <br />
+          {user.bio}
+          <br />
           📍 {user.lat}, {user.lng}
         </div>
       ))}
+
+      <hr />
       <h3>지도</h3>
       <KakaoMap />
     </div>
