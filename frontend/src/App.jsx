@@ -40,9 +40,21 @@ function App() {
   };
 
   const fetchUsers = () => {
-    axios.get("http://localhost:5000/api/users").then((res) => {
-      console.log("[FRONTEND] 사용자 목록:", res.data);
-      setUsers(res.data);
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+
+      axios
+        .get("http://localhost:5000/api/users/nearby", {
+          params: {
+            lat: latitude,
+            lng: longitude,
+            radius: 1000,
+          },
+        })
+        .then((res) => {
+          console.log("[FRONTEND] 근처 사용자:", res.data);
+          setUsers(res.data);
+        });
     });
   };
 
