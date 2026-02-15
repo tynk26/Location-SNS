@@ -5,24 +5,15 @@ import KakaoMap from "./components/KakaoMap";
 function App() {
   const [nickname, setNickname] = useState("");
   const [bio, setBio] = useState("");
-  const [avatarFile, setAvatarFile] = useState(null); // actual file
-  const [avatarUrl, setAvatarUrl] = useState(""); // to preview
+  const [avatar, setAvatar] = useState(null);
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState("");
-  const [currentUserId, setCurrentUserId] = useState(null);
 
   const [useGPS, setUseGPS] = useState(true);
   const [latInput, setLatInput] = useState("");
   const [lngInput, setLngInput] = useState("");
 
-  // preview selected file
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setAvatarFile(file);
-    if (file) {
-      setAvatarUrl(URL.createObjectURL(file));
-    }
-  };
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const registerUser = () => {
     if (!nickname) {
@@ -30,15 +21,13 @@ function App() {
       return;
     }
 
-    const submitCoordinates = (lat, lng) => {
+    const sendData = (lat, lng) => {
       const formData = new FormData();
       formData.append("nickname", nickname);
       formData.append("bio", bio);
       formData.append("lat", lat);
       formData.append("lng", lng);
-      if (avatarFile) {
-        formData.append("avatar", avatarFile);
-      }
+      if (avatar) formData.append("avatar", avatar);
 
       axios
         .post("http://localhost:5000/api/users", formData, {
@@ -48,12 +37,6 @@ function App() {
           setStatus("등록 완료");
           setCurrentUserId(res.data.id);
           fetchUsers();
-          setAvatarFile(null);
-          setAvatarUrl("");
-        })
-        .catch((err) => {
-          console.error(err);
-          setStatus("등록 실패");
         });
     };
 
@@ -61,7 +44,7 @@ function App() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          submitCoordinates(latitude, longitude);
+          sendData(latitude, longitude);
         },
         (error) => {
           alert("위치 권한 허용 필요");
@@ -72,7 +55,7 @@ function App() {
         alert("좌표 입력하세요");
         return;
       }
-      submitCoordinates(parseFloat(latInput), parseFloat(lngInput));
+      sendData(parseFloat(latInput), parseFloat(lngInput));
     }
   };
 
@@ -87,103 +70,200 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>Location SNS MVP</h1>
-
-      <h3>사용자 등록</h3>
-
-      <input
-        placeholder="닉네임"
-        value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
-      />
-      <br />
-      <br />
-
-      <input
-        placeholder="소개"
-        value={bio}
-        onChange={(e) => setBio(e.target.value)}
-      />
-      <br />
-      <br />
-
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      {avatarUrl && (
-        <div style={{ marginTop: 10 }}>
-          <img
-            src={avatarUrl}
-            alt="preview"
-            style={{ width: 80, height: 80, borderRadius: "50%" }}
-          />
-        </div>
-      )}
-      <br />
-
-      <label>
-        <input
-          type="checkbox"
-          checked={useGPS}
-          onChange={() => setUseGPS(!useGPS)}
-        />
-        GPS 사용
-      </label>
-
-      {!useGPS && (
-        <>
-          <br />
-          <br />
-          <input
-            placeholder="위도 (Latitude)"
-            value={latInput}
-            onChange={(e) => setLatInput(e.target.value)}
-          />
-          <br />
-          <br />
-          <input
-            placeholder="경도 (Longitude)"
-            value={lngInput}
-            onChange={(e) => setLngInput(e.target.value)}
-          />
-        </>
-      )}
-
-      <br />
-      <br />
-      <button onClick={registerUser}>등록</button>
-      <p>{status}</p>
-
-      <hr />
-
-      <h3>등록된 사용자</h3>
-      {users.map((user) => (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gridTemplateRows: "1fr 1fr",
+        height: "100vh",
+        width: "100vw",
+        gap: "10px",
+        fontFamily: "Arial, sans-serif",
+        padding: "10px",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Top Left: Registration */}
+      <div
+        style={{
+          gridColumn: "1 / 2",
+          gridRow: "1 / 2",
+          overflowY: "auto",
+        }}
+      >
         <div
-          key={user.id}
-          style={{ marginBottom: 10, display: "flex", alignItems: "center" }}
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "10px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            marginBottom: "20px",
+          }}
         >
-          <img
-            src={user.avatar || "https://via.placeholder.com/40"}
-            alt="avatar"
+          <h3>사용자 등록</h3>
+
+          <input
+            placeholder="닉네임"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              marginRight: 10,
+              width: "100%",
+              padding: "8px",
+              marginBottom: "10px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
             }}
           />
-          <div>
-            <strong>{user.nickname}</strong>
-            <br />
-            {user.bio}
-            <br />
-            📍 {user.lat}, {user.lng}
-          </div>
-        </div>
-      ))}
 
-      <hr />
-      <h3>지도</h3>
-      <KakaoMap currentUserId={currentUserId} />
+          <input
+            placeholder="소개"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "8px",
+              marginBottom: "10px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+            }}
+          />
+
+          <label style={{ display: "block", marginBottom: "10px" }}>
+            <input
+              type="checkbox"
+              checked={useGPS}
+              onChange={() => setUseGPS(!useGPS)}
+            />{" "}
+            GPS 사용
+          </label>
+
+          {!useGPS && (
+            <>
+              <input
+                placeholder="위도 (Latitude)"
+                value={latInput}
+                onChange={(e) => setLatInput(e.target.value)}
+                style={{
+                  width: "48%",
+                  padding: "8px",
+                  marginRight: "4%",
+                  marginBottom: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
+              />
+              <input
+                placeholder="경도 (Longitude)"
+                value={lngInput}
+                onChange={(e) => setLngInput(e.target.value)}
+                style={{
+                  width: "48%",
+                  padding: "8px",
+                  marginBottom: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </>
+          )}
+
+          <input
+            type="file"
+            onChange={(e) => setAvatar(e.target.files[0])}
+            accept="image/*"
+            style={{ marginBottom: "10px" }}
+          />
+
+          <button
+            onClick={registerUser}
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "#ff385c",
+              color: "white",
+              fontWeight: "bold",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            등록
+          </button>
+
+          <p style={{ color: "green" }}>{status}</p>
+        </div>
+
+        {/* Top Left Users List */}
+        <div>
+          <h3>등록된 사용자</h3>
+          {users.map((user) => (
+            <div
+              key={user.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                background: "white",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "8px",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              }}
+            >
+              <img
+                src={
+                  user.avatar
+                    ? user.avatar.startsWith("/uploads/")
+                      ? `http://localhost:5000${user.avatar}`
+                      : user.avatar
+                    : "https://via.placeholder.com/50"
+                }
+                alt="avatar"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "50%",
+                  marginRight: "10px",
+                }}
+              />
+              <div style={{ flex: 1 }}>
+                <strong>{user.nickname}</strong>
+                <div style={{ fontSize: "12px", color: "#555" }}>
+                  {user.bio}
+                </div>
+                <div style={{ fontSize: "11px", color: "#888" }}>
+                  📍 {user.lat}, {user.lng}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Left: Kakao Map */}
+      <div
+        style={{
+          gridColumn: "1 / 2",
+          gridRow: "2 / 3",
+          borderTop: "1px solid #ddd",
+          height: "100%",
+        }}
+      >
+        <KakaoMap currentUserId={currentUserId} />
+      </div>
+
+      {/* Right Half (full height) */}
+      <div
+        style={{
+          gridColumn: "2 / 3",
+          gridRow: "1 / 3",
+          padding: "20px",
+          overflowY: "auto",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <h2>SNS Feed / Chat / Notifications</h2>
+        <p>여기에 SNS 기능 확장 가능 (좋아요, 채팅 등)</p>
+      </div>
     </div>
   );
 }
