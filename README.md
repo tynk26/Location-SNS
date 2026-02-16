@@ -42,18 +42,6 @@
                 │   (MongoDB)         │
                 └─────────────────────┘
 
-Frontend (React)
-├── Kakao Map 렌더링
-├── 사용자 위치 표시
-├── 프로필 카드
-├── 채팅 UI
-│
-Backend (Node.js + Express)
-├── 사용자 API
-├── 위치 기반 필터링
-├── 채팅 API
-└── 임시 메모리 DB
-
 ---
 
 ## 2️⃣ Frontend 아키텍처 (React)
