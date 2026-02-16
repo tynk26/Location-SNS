@@ -1,5 +1,5 @@
-
 # 📍 Location-Based SNS (실시간 위치 기반 매칭 SNS)
+
 <img width="1268" height="667" alt="screenshot" src="https://github.com/user-attachments/assets/79296415-20f4-4b19-a34b-9bfdfc85a320" />
 
 실시간 위치 정보를 기반으로 사용자들을 연결하고, 프로필 기반 매칭 및 채팅 기능을 제공하는 **위치 기반 소셜 네트워크 서비스(Location-Based SNS)** 프로젝트입니다.  
@@ -23,6 +23,7 @@
 # 🏗 아키텍처 개요
 
 ## 1️⃣ 전체 시스템 구조
+
                 ┌─────────────────────┐
                 │     React Frontend  │
                 │  (Vite + Kakao Map) │
@@ -40,6 +41,18 @@
                 │   Database Layer    │
                 │   (MongoDB)         │
                 └─────────────────────┘
+
+Frontend (React)
+├── Kakao Map 렌더링
+├── 사용자 위치 표시
+├── 프로필 카드
+├── 채팅 UI
+│
+Backend (Node.js + Express)
+├── 사용자 API
+├── 위치 기반 필터링
+├── 채팅 API
+└── 임시 메모리 DB
 
 ---
 
@@ -92,6 +105,7 @@
 - 사용자 GPS 좌표 저장
 - 특정 반경 내 사용자 검색
 - Kakao Map에 시각적 표시
+- 반경 필터 1km (기본)
 
 ## 👤 2. 프로필 기반 매칭
 
@@ -125,18 +139,13 @@ npm run dev
 브라우저 접속:
 
 http://localhost:5173
-
-
-```
-
-## 2️⃣ Backend 실행
-```bash
+2️⃣ Backend 실행
 cd backend
 npm install
 npm run dev
 서버 실행 주소:
+
 http://localhost:5000
-```
 🔑 환경 변수 설정
 backend/.env
 
@@ -167,6 +176,22 @@ index.html에 SDK 추가
 ✅ 푸시 알림 시스템
 
 ✅ AWS 배포 (EC2 + S3 + Mongo Atlas)
+
+기본 테스트 시나리오
+
+서버 실행
+
+프론트 실행
+
+브라우저 위치 허용
+
+지도에 현재 위치 표시 확인
+
+기본 유저 (예: 시청, 광화문) 표시 확인
+
+1km 반경 조정 시 유저 표시 여부 확인
+
+프로필 클릭 → 채팅창 열림 확인
 
 🎯 프로젝트 목표
 
