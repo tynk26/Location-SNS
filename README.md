@@ -125,8 +125,9 @@ npm run dev
 브라우저 접속:
 
 http://localhost:5173
-```
+
 2️⃣ Backend 실행
+```
 ```bash
 cd backend
 npm install
