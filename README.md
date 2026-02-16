@@ -164,7 +164,6 @@ index.html에 SDK 추가
 ✅ AWS 배포 (EC2 + S3 + Mongo Atlas)
 
 🎯 프로젝트 목표
-3일 이내 MVP 완성
 
 위치 기반 매칭 핵심 기능 구현
 
