@@ -125,13 +125,15 @@ npm run dev
 브라우저 접속:
 
 http://localhost:5173
+```
 2️⃣ Backend 실행
+```
 cd backend
 npm install
 npm run dev
 서버 실행 주소:
-
 http://localhost:5000
+```
 🔑 환경 변수 설정
 backend/.env
 
