@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import KakaoMap from "./components/KakaoMap";
 import jessicaAvatar from "./assets/jessica.jpg";
 import michaelAvatar from "./assets/michael.jpg";
-import sominAvatar from "./assets/somin.jpg"; // ✅ NEW
+import sominAvatar from "./assets/somin.jpg";
 
 function App() {
   const defaultUsers = [
@@ -13,6 +13,7 @@ function App() {
       lat: 37.5662952,
       lng: 126.9779451,
       avatar: jessicaAvatar,
+      location: "서울시청",
     },
     {
       id: 2,
@@ -21,14 +22,16 @@ function App() {
       lat: 37.5705,
       lng: 126.982,
       avatar: michaelAvatar,
+      location: "서울시청 1km",
     },
     {
-      id: 3, // ✅ NEW USER
+      id: 3,
       username: "Somin Lee",
       profile: "광화문에서 책 읽는 중 📚",
-      lat: 37.5718, // 광화문 (시청 반경 내)
+      lat: 37.5718,
       lng: 126.9769,
       avatar: sominAvatar,
+      location: "광화문",
     },
   ];
 
@@ -60,9 +63,7 @@ function App() {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
   const registerUser = () => {
@@ -76,6 +77,7 @@ function App() {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
         avatar: avatar ? URL.createObjectURL(avatar) : "",
+        location: "현재 위치",
       };
 
       setUsers((prev) => [...prev, newUser]);
@@ -101,16 +103,8 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        width: "100vw",
-        fontFamily: "Arial",
-        background: "#f0f2f5",
-      }}
-    >
-      {/* LEFT SIDE — BLACK THEME */}
+    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
+      {/* LEFT SIDE — BLACK */}
       <div
         style={{
           flex: 1,
@@ -121,13 +115,13 @@ function App() {
           color: "#fff",
         }}
       >
+        {/* REGISTER SECTION */}
         <div
           style={{
-            flex: 1,
+            background: "#111",
             padding: 20,
             borderRadius: 10,
-            background: "#111",
-            overflowY: "auto",
+            marginBottom: 10,
           }}
         >
           <h3>사용자 등록</h3>
@@ -175,14 +169,25 @@ function App() {
               color: "#fff",
               border: "none",
               borderRadius: 5,
-              fontWeight: "bold",
               cursor: "pointer",
             }}
           >
             등록
           </button>
+        </div>
 
-          <h4 style={{ marginTop: 25 }}>등록된 사용자</h4>
+        {/* REGISTERED USERS */}
+        <div
+          style={{
+            background: "#111",
+            padding: 20,
+            borderRadius: 10,
+            marginBottom: 10,
+            overflowY: "auto",
+            maxHeight: 250,
+          }}
+        >
+          <h4>등록된 사용자</h4>
 
           {users.map((u) => (
             <div
@@ -201,8 +206,8 @@ function App() {
                 src={u.avatar}
                 alt="avatar"
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 45,
+                  height: 45,
                   borderRadius: "50%",
                   objectFit: "cover",
                   marginRight: 10,
@@ -211,9 +216,7 @@ function App() {
               <div>
                 <div style={{ fontWeight: "bold" }}>{u.username}</div>
                 <div style={{ fontSize: 12, color: "#ccc" }}>{u.profile}</div>
-                <div style={{ fontSize: 11, color: "#777" }}>
-                  {u.lat.toFixed(4)}, {u.lng.toFixed(4)}
-                </div>
+                <div style={{ fontSize: 11, color: "#777" }}>{u.location}</div>
               </div>
             </div>
           ))}
@@ -223,7 +226,6 @@ function App() {
         <div
           style={{
             flex: 1,
-            marginTop: 10,
             borderRadius: 10,
             overflow: "hidden",
             border: "1px solid #333",
@@ -233,76 +235,119 @@ function App() {
         </div>
       </div>
 
-      {/* RIGHT SIDE — CHAT (UNCHANGED) */}
+      {/* RIGHT SIDE — MESSENGER UI */}
       <div
         style={{
           flex: 1,
-          padding: 10,
           display: "flex",
           flexDirection: "column",
+          background: "#ffffff",
+          borderLeft: "1px solid #ddd",
         }}
       >
+        {/* HEADER */}
+        <div
+          style={{
+            padding: 15,
+            borderBottom: "1px solid #ddd",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <img
+            src={jessicaAvatar}
+            alt="chat-avatar"
+            style={{ width: 45, height: 45, borderRadius: "50%" }}
+          />
+          <div>
+            <div style={{ fontWeight: "bold", color: "#000" }}>Jessica Kim</div>
+            <div style={{ fontSize: 12, color: "#666" }}>서울시청 • 온라인</div>
+          </div>
+        </div>
+
+        {/* MESSAGES */}
         <div
           style={{
             flex: 1,
-            background: "#fff",
-            borderRadius: 10,
-            padding: 15,
-            display: "flex",
-            flexDirection: "column",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            padding: 20,
+            overflowY: "auto",
+            background: "#f0f2f5",
           }}
         >
-          <h3>💬 채팅</h3>
+          {chatMessages.map((msg, idx) => {
+            const isMe = msg.from !== "Jessica Kim";
 
-          <div style={{ flex: 1, overflowY: "auto", marginTop: 10 }}>
-            {chatMessages.map((msg, idx) => (
+            return (
               <div
                 key={idx}
                 style={{
-                  textAlign: msg.from === "Jessica Kim" ? "left" : "right",
-                  marginBottom: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: isMe ? "flex-end" : "flex-start",
+                  marginBottom: 15,
                 }}
               >
                 <div
                   style={{
-                    display: "inline-block",
-                    padding: "8px 12px",
-                    borderRadius: 15,
-                    background:
-                      msg.from === "Jessica Kim" ? "#e5e5ea" : "#ff385c",
-                    color: msg.from === "Jessica Kim" ? "#000" : "#fff",
+                    maxWidth: "70%",
+                    padding: "10px 14px",
+                    borderRadius: 18,
+                    background: isMe ? "#0084ff" : "#ffffff",
+                    color: isMe ? "#fff" : "#000",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
                   }}
                 >
                   {msg.message}
                 </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "#555",
+                    marginTop: 4,
+                  }}
+                >
+                  {msg.time}
+                </div>
               </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
+            );
+          })}
+          <div ref={chatEndRef} />
+        </div>
 
-          <div style={{ display: "flex", marginTop: 10 }}>
-            <input
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              placeholder="메시지 입력"
-              style={{ flex: 1, padding: 8 }}
-            />
-            <button
-              onClick={sendMessage}
-              style={{
-                padding: "8px 15px",
-                backgroundColor: "#ff385c",
-                color: "#fff",
-                border: "none",
-                borderRadius: 5,
-                marginLeft: 5,
-                cursor: "pointer",
-              }}
-            >
-              보내기
-            </button>
-          </div>
+        {/* INPUT */}
+        <div
+          style={{
+            padding: 15,
+            borderTop: "1px solid #ddd",
+            display: "flex",
+            gap: 10,
+          }}
+        >
+          <input
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="메시지를 입력하세요..."
+            style={{
+              flex: 1,
+              padding: 10,
+              borderRadius: 20,
+              border: "1px solid #ccc",
+            }}
+          />
+          <button
+            onClick={sendMessage}
+            style={{
+              padding: "8px 18px",
+              backgroundColor: "#0084ff",
+              color: "#fff",
+              border: "none",
+              borderRadius: 20,
+              cursor: "pointer",
+            }}
+          >
+            전송
+          </button>
         </div>
       </div>
     </div>
