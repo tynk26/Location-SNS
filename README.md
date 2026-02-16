@@ -55,26 +55,37 @@
 
 ### 주요 구조
 
-frontend/
-│
-├── src/
-│   ├── components/
-│   │   ├── MapView.tsx
-│   │   ├── ChatBox.tsx
-│   │   ├── AlarmPanel.tsx
-│   │   ├── UserProfileCard.tsx
+├── frontend/
 │   │
-│   ├── services/
-│   │   └── api.ts
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.ts
 │   │
-│   ├── assets/
-│   │   └── avatars/
-│   │
-│   ├── App.tsx
-│   └── main.tsx
-│
-├── index.html
-└── package.json
+│   └── src/
+│       │
+│       ├── main.tsx
+│       ├── App.tsx
+│       │
+│       ├── components/
+│       │   ├── MapView.tsx
+│       │   ├── ChatBox.tsx
+│       │   ├── AlarmPanel.tsx
+│       │   ├── UserProfileCard.tsx
+│       │   └── SocialIcons.tsx
+│       │
+│       ├── services/
+│       │   └── api.ts
+│       │
+│       ├── assets/
+│       │   ├── jessica.png
+│       │   ├── somin.jpg
+│       │   └── avatars/
+│       │
+│       └── styles/
+│           ├── global.css
+│           ├── chatbox.css
+│           ├── map.css
+│           └── layout.css
 
 
 ### 프론트엔드 역할
@@ -101,22 +112,31 @@ frontend/
 
 ### 구조
 
-backend/
+├── backend/
+│   │
+│   ├── package.json
+│   ├── .env
+│   │
+│   └── src/
+│       │
+│       ├── server.js
+│       │
+│       ├── routes/
+│       │   ├── users.js
+│       │   ├── matches.js
+│       │   └── chat.js
+│       │
+│       ├── controllers/
+│       │   ├── userController.js
+│       │   ├── matchController.js
+│       │   └── chatController.js
+│       │
+│       └── services/
+│           ├── geoService.js
+│           ├── matchService.js
+│           └── chatService.js
 │
-├── src/
-│   ├── routes/
-│   │   ├── users.js
-│   │   ├── matches.js
-│   │   └── chat.js
-│   │
-│   ├── controllers/
-│   │
-│   ├── services/
-│   │
-│   └── server.js
-│
-├── package.json
-└── .env
+└── README.md
 
 ### 백엔드 역할
 
