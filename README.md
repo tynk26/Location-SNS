@@ -1,167 +1,174 @@
-# 📍 Location-Based SNS (실시간 위치 기반 매칭 SNS)
+📍 Location-Based SNS
 
-실시간 위치 정보를 기반으로 사용자들을 연결하고, 프로필 기반 매칭 및 채팅 기능을 제공하는 **위치 기반 소셜 네트워크 서비스(Location-Based SNS)** 프로젝트입니다.  
-카카오 지도 API를 활용하여 사용자 위치를 시각화하고, Node.js + React 기반의 풀스택 아키텍처로 설계되었습니다.
+실시간 위치 기반 매칭 소셜 네트워크 서비스
 
----
+🧭 프로젝트 소개
 
-# 🚀 프로젝트 개요
+Location-Based SNS는 사용자의 실시간 위치 정보를 기반으로 주변 사용자들을 탐색하고, 프로필 기반 매칭 및 채팅 기능을 제공하는 풀스택 소셜 네트워크 서비스입니다.
 
-이 프로젝트는 다음과 같은 핵심 기능을 제공합니다:
+카카오 지도 API를 활용하여 지도 위에 사용자를 시각화하며,
+Node.js + Express 백엔드와 React 프론트엔드로 구성된 확장 가능한 아키텍처를 기반으로 설계되었습니다.
 
-- 📍 실시간 위치 기반 사용자 탐색
-- 🗺 Kakao Map API 기반 사용자 시각화
-- 👤 프로필 기반 매칭
-- 💬 실시간 채팅 UI
-- 🔔 소셜 인터랙션 알림 패널
-- 🌐 확장 가능한 풀스택 구조 (Frontend + Backend)
+🚀 핵심 기능
+1️⃣ 실시간 위치 기반 사용자 탐색
 
----
+GPS 좌표 저장
 
-# 🏗 아키텍처 개요
+반경 기반 사용자 검색
 
-## 1️⃣ 전체 시스템 구조
+Kakao Map에 사용자 마커 표시
 
-[ React Frontend ]
-│
-│ REST API / WebSocket
-▼
-[ Node.js + Express Backend ]
-│
-▼
-[ Database (MongoDB 예정) ]
+2️⃣ 프로필 기반 매칭
 
----
+관심사 기반 필터링
 
-## 2️⃣ Frontend 아키텍처 (React)
+거리 + 프로필 조건 매칭 로직
 
-### 기술 스택
+확장 가능한 매칭 알고리즘 구조
 
-- React (Vite)
-- Kakao Map JavaScript SDK
-- Axios (API 통신)
-- CSS Modules
+3️⃣ 채팅 시스템
 
-### 주요 구조
+Messenger 스타일 UI
 
-frontend/
-├── src/
-│ ├── components/
-│ │ ├── MapView.tsx
-│ │ ├── ChatBox.tsx
-│ │ ├── AlarmPanel.tsx
-│ │ ├── UserProfileCard.tsx
-│ │
-│ ├── assets/
-│ │ ├── avatars
-│ │
-│ ├── services/
-│ │ └── api.ts
-│ │
-│ └── App.tsx
+사용자 이름 / 위치 / 시간 표시
 
-### 프론트엔드 역할
+실시간 확장 가능 구조
 
-- Kakao Map SDK 로 지도 렌더링
-- 사용자 위치 마커 표시
-- 프로필 클릭 시 인터랙션 UI 표시
-- 채팅 UI (Messenger 스타일)
-- 알림 패널 렌더링
-- REST API 호출을 통한 데이터 연동
+4️⃣ 소셜 인터랙션 알림 패널
 
----
+좋아요
 
-## 3️⃣ Backend 아키텍처 (Node.js + Express)
+메시지 수신
 
-### 기술 스택
+프로필 방문
 
-- Node.js
-- Express
-- CORS
-- dotenv
-- (추후) MongoDB + Mongoose
-- (추후) Socket.io
+상호작용 로그 추적
 
-### 구조
+🏗 시스템 아키텍처
+전체 구조
 
-backend/
-├── src/
-│ ├── routes/
-│ │ ├── users.js
-│ │ ├── matches.js
-│ │ ├── chat.js
-│ │
-│ ├── controllers/
-│ │
-│ ├── services/
-│ │
-│ └── server.js
+Frontend (React)
+⬇ REST API / WebSocket
+Backend (Node.js + Express)
+⬇
+Database (MongoDB 예정)
 
-### 백엔드 역할
+🖥 Frontend 구조
+기술 스택
 
-- 사용자 등록 및 위치 업데이트
-- 반경 기반 사용자 탐색 (Geo Query)
-- 프로필 기반 매칭 로직
-- 채팅 메시지 저장 및 조회
-- 소셜 인터랙션 로그 저장
-- WebSocket 기반 실시간 기능 확장
+React (Vite)
 
----
+Kakao Map JavaScript SDK
 
-# 📌 핵심 기능 설명
+Axios
 
-## 📍 1. 실시간 위치 기반 탐색
+CSS Modules
 
-- 사용자 GPS 좌표 저장
-- 특정 반경 내 사용자 검색
-- Kakao Map에 시각적 표시
+디렉토리 구조
 
-## 👤 2. 프로필 기반 매칭
+frontend
+└── src
+  ├── components
+  │  ├── MapView.tsx
+  │  ├── ChatBox.tsx
+  │  ├── AlarmPanel.tsx
+  │  ├── UserProfileCard.tsx
+  │
+  ├── assets
+  │  └── avatars
+  │
+  ├── services
+  │  └── api.ts
+  │
+  └── App.tsx
 
-- 사용자 관심사 기반 필터링
-- 거리 + 관심사 매칭 알고리즘
-- 향후 점수 기반 매칭 로직 확장 가능
+프론트엔드 역할
 
-## 💬 3. 채팅 시스템
+Kakao Map SDK를 통한 지도 렌더링
 
-- Messenger 스타일 UI
-- 사용자 이름, 위치, 시간 표시
-- 향후 WebSocket 기반 실시간 채팅 확장
+사용자 마커 표시
 
-## 🔔 4. 알림 시스템
+프로필 카드 UI
 
-- 좋아요
-- 메시지 수신
-- 프로필 방문
-- 소셜 인터랙션 로그 표시
+채팅 UI 렌더링
 
----
+알림 패널 표시
 
-# ⚙️ 설치 및 실행 방법
+백엔드 API 통신
 
-## 1️⃣ Frontend 실행
+🖥 Backend 구조
+기술 스택
 
-```bash
+Node.js
+
+Express
+
+CORS
+
+dotenv
+
+(예정) MongoDB + Mongoose
+
+(예정) Socket.io
+
+디렉토리 구조
+
+backend
+└── src
+  ├── routes
+  │  ├── users.js
+  │  ├── matches.js
+  │  ├── chat.js
+  │
+  ├── controllers
+  ├── services
+  └── server.js
+
+백엔드 역할
+
+사용자 등록
+
+위치 업데이트
+
+반경 기반 사용자 탐색 (Geo Query)
+
+매칭 로직 처리
+
+채팅 메시지 저장
+
+소셜 인터랙션 로그 관리
+
+WebSocket 기반 실시간 확장
+
+⚙️ 실행 방법
+1️⃣ Frontend 실행
+
 cd frontend
 npm install
 npm run dev
-브라우저 접속:
 
+브라우저 접속:
 http://localhost:5173
+
 2️⃣ Backend 실행
+
 cd backend
 npm install
 npm run dev
-서버 실행 주소:
 
+서버 주소:
 http://localhost:5000
+
 🔑 환경 변수 설정
-backend/.env
+
+backend/.env 파일 생성
 
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
+
 🌍 Kakao Map API 설정
+
 Kakao Developers에서 애플리케이션 생성
 
 JavaScript 키 발급
@@ -171,23 +178,26 @@ JavaScript 키 발급
 index.html에 SDK 추가
 
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_APP_KEY&autoload=false"></script>
+
 🔮 향후 확장 계획
-✅ MongoDB 기반 사용자 데이터 영속화
 
-✅ JWT 인증 시스템
+MongoDB 기반 사용자 데이터 영속화
 
-✅ 실시간 채팅 (Socket.io)
+JWT 인증 시스템
 
-✅ 매칭 알고리즘 고도화
+Socket.io 실시간 채팅
 
-✅ 모바일 반응형 UI
+매칭 알고리즘 고도화
 
-✅ 푸시 알림 시스템
+모바일 반응형 UI
 
-✅ AWS 배포 (EC2 + S3 + Mongo Atlas)
+푸시 알림 시스템
+
+AWS 배포 (EC2 + S3 + Mongo Atlas)
 
 🎯 프로젝트 목표
-3일 이내 MVP 완성
+
+3일 내 MVP 완성
 
 위치 기반 매칭 핵심 기능 구현
 
@@ -196,19 +206,20 @@ index.html에 SDK 추가
 확장 가능한 풀스택 구조 확보
 
 🧠 기술적 의의
-이 프로젝트는 단순 지도 표시 앱이 아니라,
+
+이 프로젝트는 단순 지도 앱이 아니라,
 
 위치 데이터 처리
 
-실시간 인터랙션 설계
+실시간 인터랙션 구조 설계
 
-소셜 매칭 알고리즘 구조화
+소셜 매칭 로직 아키텍처화
 
-프론트엔드-백엔드 분리 아키텍처
+프론트엔드-백엔드 분리 설계
 
 를 통합적으로 구현하는 풀스택 위치 기반 SNS 플랫폼의 기초 설계입니다.
 
-👨‍💻 개발자
+👨‍💻 Developer
+
 Independent Full-Stack Developer
 Location-Based Social Platform Architect
-```
