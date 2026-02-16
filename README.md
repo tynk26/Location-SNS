@@ -127,7 +127,7 @@ npm run dev
 http://localhost:5173
 ```
 2️⃣ Backend 실행
-```
+```bash
 cd backend
 npm install
 npm run dev
