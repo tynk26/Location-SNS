@@ -13,6 +13,16 @@ function KakaoMap({ users, currentUser }) {
   const [routeInfo, setRouteInfo] = useState(null);
   const [isRouting, setIsRouting] = useState(false);
 
+  // draggable popup position (start centered)
+  const [popupPos, setPopupPos] = useState({ x: null, y: null });
+  const dragStateRef = useRef({
+    dragging: false,
+    startMouseX: 0,
+    startMouseY: 0,
+    startX: 0,
+    startY: 0,
+  });
+
   // -----------------------------
   // Init map ONCE
   // -----------------------------
@@ -140,12 +150,73 @@ function KakaoMap({ users, currentUser }) {
       content.onclick = () => {
         setSelectedUser(user);
         clearRoute();
+        // reset popup to centered on each open
+        setPopupPos({ x: null, y: null });
       };
     });
 
     return () => clearOverlays();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, isMapReady]);
+
+  // -----------------------------
+  // Draggable popup handlers
+  // -----------------------------
+  const onPopupPointerDown = (e) => {
+    // left mouse / primary touch
+    // Don't start drag when clicking on interactive elements
+    const tag = e.target?.tagName?.toLowerCase?.();
+    if (
+      tag === "button" ||
+      tag === "input" ||
+      tag === "textarea" ||
+      tag === "img"
+    ) {
+      return;
+    }
+
+    e.preventDefault();
+    const ds = dragStateRef.current;
+
+    ds.dragging = true;
+    ds.startMouseX = e.clientX;
+    ds.startMouseY = e.clientY;
+
+    // If first drag, start from center as 0/0 then compute pixel offsets
+    // We'll treat popupPos.x/y as px offsets from top-left of viewport.
+    const initialX = popupPos.x ?? window.innerWidth / 2;
+    const initialY = popupPos.y ?? window.innerHeight / 2;
+
+    ds.startX = initialX;
+    ds.startY = initialY;
+
+    // capture pointer so we continue getting move events
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+  };
+
+  const onPopupPointerMove = (e) => {
+    const ds = dragStateRef.current;
+    if (!ds.dragging) return;
+
+    const dx = e.clientX - ds.startMouseX;
+    const dy = e.clientY - ds.startMouseY;
+
+    // Move popup center point
+    setPopupPos({
+      x: ds.startX + dx,
+      y: ds.startY + dy,
+    });
+  };
+
+  const onPopupPointerUp = (e) => {
+    const ds = dragStateRef.current;
+    ds.dragging = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+  };
 
   // -----------------------------
   // Fetch + render fastest route
@@ -166,10 +237,8 @@ function KakaoMap({ users, currentUser }) {
       const res = await fetch(url);
       const data = await res.json();
 
-      // Always log raw response so you can verify quickly
       console.log("[KAKAO DIRECTIONS RAW]", data);
 
-      // If proxy wrapped an error
       if (!res.ok || data?.error) {
         alert(
           `길찾기 실패: ${data?.kakao?.msg || data?.kakao?.message || data?.error || "unknown"}`,
@@ -181,7 +250,6 @@ function KakaoMap({ users, currentUser }) {
       const summary = route0?.summary || null;
 
       if (!route0 || !summary) {
-        // Show keys to help debugging without crashing
         const keys = data ? Object.keys(data) : [];
         alert(
           `길찾기 응답에 routes/summary가 없습니다. 콘솔 확인. topKeys=${keys.join(",")}`,
@@ -189,18 +257,15 @@ function KakaoMap({ users, currentUser }) {
         return;
       }
 
-      // Show route summary in popup
       setRouteInfo({
-        distance: summary.distance, // meters
-        duration: summary.duration, // seconds
+        distance: summary.distance,
+        duration: summary.duration,
         taxiFare: summary.fare?.taxi ?? null,
         tollFare: summary.fare?.toll ?? null,
       });
 
-      // Fit map bounds even if we can't draw polyline
       fitBoundsFromSummary(summary);
 
-      // Build polyline path (may be empty in some cases)
       const path = buildPathFromRoute(route0);
 
       if (path.length > 0) {
@@ -208,16 +273,15 @@ function KakaoMap({ users, currentUser }) {
 
         const polyline = new window.kakao.maps.Polyline({
           path,
-          strokeWeight: 6,
-          strokeColor: "#1E88E5",
-          strokeOpacity: 0.9,
+          strokeWeight: 7,
+          strokeColor: "#FF0000", // ✅ RED route
+          strokeOpacity: 0.95,
           strokeStyle: "solid",
         });
 
         polyline.setMap(map);
         routePolylineRef.current = polyline;
       } else {
-        // Not fatal: still show summary + bounds
         console.warn(
           "[KAKAO] No polyline vertexes found; showing summary only.",
         );
@@ -230,6 +294,24 @@ function KakaoMap({ users, currentUser }) {
     }
   };
 
+  // popup positioning:
+  // - If popupPos.x/y is null => use transform center
+  // - If set => position by left/top with translate(-50%,-50%) to keep same look
+  const popupStyle =
+    popupPos.x == null || popupPos.y == null
+      ? {
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }
+      : {
+          position: "absolute",
+          left: popupPos.x,
+          top: popupPos.y,
+          transform: "translate(-50%, -50%)",
+        };
+
   return (
     <>
       <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
@@ -238,17 +320,18 @@ function KakaoMap({ users, currentUser }) {
       {selectedUser && (
         <div
           style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            ...popupStyle,
             background: "white",
             padding: "24px",
             borderRadius: "16px",
             width: "360px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
             zIndex: 9999,
+            touchAction: "none", // helps dragging on touch devices
           }}
+          onPointerDown={onPopupPointerDown}
+          onPointerMove={onPopupPointerMove}
+          onPointerUp={onPopupPointerUp}
         >
           {/* Close */}
           <div
@@ -317,7 +400,7 @@ function KakaoMap({ users, currentUser }) {
                 marginTop: 14,
                 fontSize: 14,
                 lineHeight: 1.6,
-                color: "#000", // ✅ force black text
+                color: "#000",
               }}
             >
               <div>🕒 소요 시간: {Math.round(routeInfo.duration / 60)}분</div>
@@ -333,13 +416,7 @@ function KakaoMap({ users, currentUser }) {
                 <div>🧾 통행료: {routeInfo.tollFare.toLocaleString()}원</div>
               )}
 
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: 12,
-                  color: "#000", // also black
-                }}
-              >
+              <div style={{ marginTop: 8, fontSize: 12, color: "#000" }}>
                 * polyline(경로 선)이 없으면 요약/바운드만 표시됩니다. 콘솔의
                 RAW 응답을 확인하세요.
               </div>
