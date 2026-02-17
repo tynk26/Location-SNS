@@ -161,7 +161,7 @@ function App() {
 
       {/* MAP IN CENTER */}
       <div style={{ flex: 1 }}>
-        <KakaoMap users={users} />
+        <KakaoMap users={users} currentUser={currentUser} />
       </div>
 
       {/* CHAT ON RIGHT */}
