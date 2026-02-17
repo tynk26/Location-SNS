@@ -51,7 +51,7 @@ function LeftPanel({
 
       <hr style={{ margin: "20px 0" }} />
 
-      <h3>등록된 사용자</h3>
+      <h3>주변 사용자</h3>
 
       {users.map((user) => (
         <div

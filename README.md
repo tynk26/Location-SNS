@@ -5,206 +5,195 @@
 <img width="1280" height="668" alt="screenshot6" src="https://github.com/user-attachments/assets/70de63ab-cbfb-4b9d-b295-7d4a9ef7eabc" />
 
 실시간 위치 정보를 기반으로 사용자들을 연결하고, 프로필 기반 매칭 및 채팅 기능을 제공하는 **위치 기반 소셜 네트워크 서비스(Location-Based SNS)** 프로젝트입니다.  
-카카오 지도 API를 활용하여 사용자 위치를 시각화하고, Node.js + React 기반의 풀스택 아키텍처로 설계되었습니다.
+카카오 지도 API를 활용하여 사용자 위치를 시각화하고, **Node.js + React** 기반의 풀스택 아키텍처로 설계되었습니다.
 
 ---
 
-# 🚀 프로젝트 개요
+## ✨ Key Features
 
-이 프로젝트는 다음과 같은 핵심 기능을 제공합니다:
-
-- 📍 실시간 위치 기반 사용자 탐색
-- 🗺 Kakao Map API 기반 사용자 시각화
-- 👤 프로필 기반 매칭
-- 💬 실시간 채팅 UI
-- 🔔 소셜 인터랙션 알림 패널
-- 🌐 확장 가능한 풀스택 구조 (Frontend + Backend)
+- 📍 **실시간 위치 기반 사용자 탐색** (반경 필터)
+- 🗺 **Kakao Map API 기반 사용자 위치 시각화**
+- 👤 **프로필 기반 매칭 구조**
+- 💬 **Messenger 스타일 채팅 UI** (실시간 확장 가능)
+- 🔔 **소셜 인터랙션 알림 패널** (좋아요/메시지/팔로우 등)
+- 🌐 **확장 가능한 풀스택 구조** (Frontend + Backend + DB)
 
 ---
 
-# 🏗 아키텍처 개요
+## 🏗 Architecture Overview
 
-## 1️⃣ 전체 시스템 구조
+### 1️⃣ System Diagram
 
-                ┌─────────────────────┐
-                │     React Frontend  │
-                │  (Vite + Kakao Map) │
-                └──────────┬──────────┘
-                           │
-                           │ REST API / WebSocket
-                           ▼
-                ┌─────────────────────┐
-                │ Node.js + Express   │
-                │       Backend       │
-                └──────────┬──────────┘
-                           │
-                           ▼
-                ┌─────────────────────┐
-                │   Database Layer    │
-                │   (MongoDB)         │
-                └─────────────────────┘
+```text
+┌──────────────────────────┐
+│      React Frontend      │
+│   (Vite + Kakao Map SDK) │
+└─────────────┬────────────┘
+              │
+              │ REST API / WebSocket
+              ▼
+┌──────────────────────────┐
+│    Node.js + Express     │
+│          Backend         │
+└─────────────┬────────────┘
+              │
+              ▼
+┌──────────────────────────┐
+│       Database Layer     │
+│   (MongoDB - Planned)    │
+└──────────────────────────┘
+🧩 Tech Stack
+Frontend
+React (Vite)
 
----
+Kakao Map JavaScript SDK
 
-## 2️⃣ Frontend 아키텍처 (React)
+Axios (API communication)
 
-### 기술 스택
+CSS Modules
 
-- React (Vite)
-- Kakao Map JavaScript SDK
-- Axios (API 통신)
-- CSS Modules
+Backend
+Node.js
 
-### 프론트엔드 역할
+Express
 
-- Kakao Map SDK 로 지도 렌더링
-- 사용자 위치 마커 표시
-- 프로필 클릭 시 인터랙션 UI 표시
-- 채팅 UI (Messenger 스타일)
-- 알림 패널 렌더링
-- REST API 호출을 통한 데이터 연동
+CORS
 
----
+dotenv
 
-## 3️⃣ Backend 아키텍처 (Node.js + Express)
+Socket.io (planned / partially integrated)
 
-### 기술 스택
+MongoDB + Mongoose (planned)
 
-- Node.js
-- Express
-- CORS
-- dotenv
-- (추후) MongoDB + Mongoose
-- (추후) Socket.io
+📌 Core Modules
+📍 1. Location-Based Discovery
+GPS 좌표 기반 사용자 저장/표시
 
-### 백엔드 역할
+특정 반경(radius) 내 사용자 탐색
 
-- 사용자 등록 및 위치 업데이트
-- 반경 기반 사용자 탐색 (Geo Query)
-- 프로필 기반 매칭 로직
-- 채팅 메시지 저장 및 조회
-- 소셜 인터랙션 로그 저장
-- WebSocket 기반 실시간 기능 확장
+Kakao Map에 사용자 오버레이(프로필 카드) 렌더링
 
----
+기본 반경 1km (조정 가능)
 
-# 📌 핵심 기능 설명
+👤 2. Profile-Based Matching (Extensible)
+프로필 기반 필터링 구조
 
-## 📍 1. 실시간 위치 기반 탐색
+거리 + 프로필 조건 기반 매칭 확장 가능
 
-- 사용자 GPS 좌표 저장
-- 특정 반경 내 사용자 검색
-- Kakao Map에 시각적 표시
-- 반경 필터 1km (기본)
+향후 점수 기반 랭킹/추천 로직으로 발전 가능
 
-## 👤 2. 프로필 기반 매칭
+💬 3. Chat System
+Messenger 스타일 UI
 
-- 사용자 관심사 기반 필터링
-- 거리 + 관심사 매칭 알고리즘
-- 향후 점수 기반 매칭 로직 확장 가능
+사용자 이름/시간 표시
 
-## 💬 3. 채팅 시스템
+Socket.io 기반 실시간 채팅 확장 가능
 
-- Messenger 스타일 UI
-- 사용자 이름, 위치, 시간 표시
-- 향후 WebSocket 기반 실시간 채팅 확장
+(선택) 메시지 저장/조회 기능 추가 예정
 
-## 🔔 4. 알림 시스템
+🔔 4. Social Interaction Notifications
+좋아요 / 메시지 / 팔로우 등 이벤트 기록
 
-- 좋아요
-- 메시지 수신
-- 프로필 방문
-- 소셜 인터랙션 로그 표시
+알림 패널에서 UI로 시각화
 
----
+향후 푸시 알림(웹/모바일) 확장 가능
 
-# ⚙️ 설치 및 실행 방법
+⚙️ Getting Started
+✅ Prerequisites
+Node.js (LTS recommended)
 
-## 1️⃣ Frontend 실행
+npm
 
-```bash
+Kakao Developers account + JavaScript Key
+
+(Optional) MongoDB (Atlas/local)
+
+1️⃣ Frontend Setup & Run
 cd frontend
 npm install
 npm run dev
-브라우저 접속:
+Open:
 
 http://localhost:5173
-2️⃣ Backend 실행
+
+2️⃣ Backend Setup & Run
 cd backend
 npm install
 npm run dev
-서버 실행 주소:
+Server:
 
 http://localhost:5000
-🔑 환경 변수 설정
-backend/.env
+
+🔑 Environment Variables
+Create: backend/.env
 
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
-🌍 Kakao Map API 설정
+KAKAO_REST_API_KEY=your_kakao_rest_api_key
+KAKAO_REST_API_KEY는 (선택) 길찾기/외부 API 프록시 기능 등에 사용됩니다.
+
+🌍 Kakao Map API Setup
 Kakao Developers에서 애플리케이션 생성
 
 JavaScript 키 발급
 
-도메인 등록 (localhost 포함)
+플랫폼(Web) 도메인 등록 (localhost 포함)
 
-index.html에 SDK 추가
+index.html에 SDK 추가:
 
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_APP_KEY&autoload=false"></script>
-🔮 향후 확장 계획
+✅ Recommended Test Scenario
+Backend 서버 실행
+
+Frontend 실행
+
+브라우저에서 위치 권한 허용
+
+지도 로딩 확인
+
+기본 유저(예: 시청, 광화문) 표시 확인
+
+1km 반경 조정 시 유저 표시 변화 확인
+
+프로필 클릭 → 팝업/채팅 UI 확인
+
+(확장 시) Socket 기반 메시지 전송 확인
+
+🔮 Roadmap
 ✅ MongoDB 기반 사용자 데이터 영속화
 
 ✅ JWT 인증 시스템
 
-✅ 실시간 채팅 (Socket.io)
+✅ 실시간 채팅(Socket.io) 안정화
 
-✅ 매칭 알고리즘 고도화
+✅ 매칭 알고리즘 고도화 (점수 기반 추천)
 
 ✅ 모바일 반응형 UI
 
 ✅ 푸시 알림 시스템
 
-✅ AWS 배포 (EC2 + S3 + Mongo Atlas)
+✅ 배포 (AWS EC2 + S3 + MongoDB Atlas)
 
-기본 테스트 시나리오
-
-서버 실행
-
-프론트 실행
-
-브라우저 위치 허용
-
-지도에 현재 위치 표시 확인
-
-기본 유저 (예: 시청, 광화문) 표시 확인
-
-1km 반경 조정 시 유저 표시 여부 확인
-
-프로필 클릭 → 채팅창 열림 확인
-
-🎯 프로젝트 목표
-
+🎯 Project Goals
 위치 기반 매칭 핵심 기능 구현
 
 실시간 사용자 상호작용 구조 설계
 
-확장 가능한 풀스택 구조 확보
+확장 가능한 풀스택 아키텍처 확보
 
-🧠 기술적 의의
-이 프로젝트는 단순 지도 표시 앱이 아니라,
+🧠 Technical Highlights
+이 프로젝트는 단순 지도 표시 앱이 아니라 아래를 통합적으로 구현합니다:
 
-위치 데이터 처리
+위치 데이터 처리 및 반경 기반 탐색
 
-실시간 인터랙션 설계
+지도 기반 UI/오버레이 인터랙션 설계
 
-소셜 매칭 알고리즘 구조화
+소셜 매칭 알고리즘 구조화(확장 가능)
 
-프론트엔드-백엔드 분리 아키텍처
+프론트엔드-백엔드 분리 아키텍처 기반 확장성
 
-를 통합적으로 구현하는 풀스택 위치 기반 SNS 플랫폼의 기초 설계입니다.
-
-👨‍💻 개발자
+👨‍💻 Author
 Independent Full-Stack Developer
 Location-Based Social Platform Architect
 ```
