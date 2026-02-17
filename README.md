@@ -1,7 +1,6 @@
 # 📍 Location-Based SNS (실시간 위치 기반 매칭 SNS)
 
 <img width="1268" height="667" alt="screenshot" src="https://github.com/user-attachments/assets/79296415-20f4-4b19-a34b-9bfdfc85a320" />
-<img width="1271" height="675" alt="screenshot3" src="https://github.com/user-attachments/assets/964de57e-5f2f-4820-9010-652ffee969d7" />
 <img width="1280" height="668" alt="screenshot6" src="https://github.com/user-attachments/assets/70de63ab-cbfb-4b9d-b295-7d4a9ef7eabc" />
 
 실시간 위치 정보를 기반으로 사용자들을 연결하고, 프로필 기반 매칭 및 채팅 기능을 제공하는 **위치 기반 소셜 네트워크 서비스(Location-Based SNS)** 프로젝트입니다.  
