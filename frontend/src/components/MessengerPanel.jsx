@@ -1,173 +1,152 @@
+import React from "react";
+
 function MessengerPanel({
   chatMessages,
   chatInput,
   setChatInput,
   sendMessage,
   chatEndRef,
-  avatar,
   currentUser,
+  users,
 }) {
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
+
+  const getAvatarByUsername = (username) => {
+    const user = users.find((u) => u.username === username);
+    return user?.avatar;
+  };
+
   return (
     <div
       style={{
-        flex: 1,
+        width: "320px",
+        borderLeft: "1px solid #ddd",
         display: "flex",
         flexDirection: "column",
-        background: "#ffffff",
-        borderLeft: "1px solid #e4e6eb",
-        fontFamily: "Helvetica, Arial, sans-serif",
+        background: "#f5f7fb",
       }}
     >
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div
         style={{
-          padding: "12px 16px",
-          borderBottom: "1px solid #e4e6eb",
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          background: "#ffffff",
+          padding: "15px",
+          fontWeight: "bold",
+          borderBottom: "1px solid #ddd",
+          background: "white",
         }}
       >
-        <div style={{ position: "relative" }}>
-          <img
-            src={avatar}
-            alt="chat-avatar"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
-          {/* Green Online Dot */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 2,
-              right: 2,
-              width: 10,
-              height: 10,
-              backgroundColor: "#31a24c",
-              borderRadius: "50%",
-              border: "2px solid white",
-            }}
-          />
-        </div>
-
-        <div>
-          <div style={{ fontWeight: 600, fontSize: 15, color: "#050505" }}>
-            {currentUser ? currentUser.username : "로그인 필요"}
-          </div>
-          <div style={{ fontSize: 12, color: "#65676b" }}>온라인</div>
-        </div>
+        💬 Global Chat
       </div>
 
-      {/* ================= MESSAGE AREA ================= */}
+      {/* MESSAGE AREA */}
       <div
         style={{
           flex: 1,
-          padding: "16px",
           overflowY: "auto",
-          background: "#ffffff",
+          padding: "15px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
         }}
       >
-        {chatMessages.map((msg, idx) => {
-          const isMe = currentUser && msg.from === currentUser.username;
+        {chatMessages.map((msg, index) => {
+          const isMe = currentUser?.username === msg.from;
+          const avatar = getAvatarByUsername(msg.from);
 
           return (
             <div
-              key={idx}
+              key={index}
               style={{
                 display: "flex",
-                justifyContent: isMe ? "flex-end" : "flex-start",
-                marginBottom: 10,
+                flexDirection: isMe ? "row-reverse" : "row",
+                alignItems: "flex-end",
+                gap: "8px",
               }}
             >
-              {!isMe && (
-                <img
-                  src={avatar}
-                  alt="user-avatar"
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: "50%",
-                    marginRight: 8,
-                    alignSelf: "flex-end",
-                  }}
-                />
-              )}
+              {/* Avatar */}
+              <img
+                src={avatar}
+                alt="avatar"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
 
+              {/* Message Bubble */}
               <div
                 style={{
-                  maxWidth: "60%",
-                  padding: "10px 14px",
-                  borderRadius: 18,
-                  fontSize: 14,
-                  backgroundColor: isMe ? "#0084ff" : "#f0f2f5",
-                  color: isMe ? "#ffffff" : "#050505",
-                  lineHeight: 1.4,
+                  background: isMe ? "#0084ff" : "white",
+                  color: isMe ? "white" : "black",
+                  padding: "8px 12px",
+                  borderRadius: "18px",
+                  maxWidth: "200px",
+                  fontSize: "14px",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                 }}
               >
                 {msg.message}
-              </div>
-
-              {isMe && (
-                <img
-                  src={avatar}
-                  alt="my-avatar"
+                <div
                   style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: "50%",
-                    marginLeft: 8,
-                    alignSelf: "flex-end",
+                    fontSize: "10px",
+                    marginTop: "4px",
+                    opacity: 0.7,
+                    textAlign: "right",
                   }}
-                />
-              )}
+                >
+                  {msg.time}
+                </div>
+              </div>
             </div>
           );
         })}
+
         <div ref={chatEndRef} />
       </div>
 
-      {/* ================= INPUT ================= */}
+      {/* INPUT AREA */}
       <div
         style={{
-          padding: "10px 16px",
-          borderTop: "1px solid #e4e6eb",
           display: "flex",
-          alignItems: "center",
-          gap: 10,
-          background: "#ffffff",
+          padding: "10px",
+          borderTop: "1px solid #ddd",
+          background: "white",
         }}
       >
         <input
+          type="text"
+          placeholder={
+            currentUser
+              ? `${currentUser.username}로 메시지 보내기`
+              : "로그인 먼저 하세요"
+          }
           value={chatInput}
           onChange={(e) => setChatInput(e.target.value)}
-          placeholder="메시지를 입력하세요..."
+          onKeyDown={handleKeyPress}
           style={{
             flex: 1,
-            padding: "10px 14px",
-            borderRadius: 20,
-            border: "1px solid #ccd0d5",
+            padding: "8px",
+            borderRadius: "20px",
+            border: "1px solid #ccc",
             outline: "none",
-            fontSize: 14,
-            backgroundColor: "#f0f2f5",
-            color: "#050505", // ✅ text black
-            caretColor: "#050505", // ✅ cursor black
           }}
         />
 
         <button
           onClick={sendMessage}
           style={{
-            padding: "8px 18px",
-            backgroundColor: "#0084ff",
-            color: "#ffffff",
+            marginLeft: "8px",
+            padding: "8px 14px",
+            borderRadius: "20px",
             border: "none",
-            borderRadius: 20,
-            fontWeight: 500,
+            background: "#0084ff",
+            color: "white",
             cursor: "pointer",
           }}
         >

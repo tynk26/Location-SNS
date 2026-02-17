@@ -140,15 +140,6 @@ function App() {
 
     socket.emit("sendMessage", payload);
 
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        from: currentUser.username,
-        message: chatInput,
-        time: new Date().toLocaleTimeString().slice(0, 5),
-      },
-    ]);
-
     setChatInput("");
   };
 
@@ -182,6 +173,7 @@ function App() {
         chatEndRef={chatEndRef}
         avatar={currentUser?.avatar}
         currentUser={currentUser}
+        users={users}
       />
     </div>
   );
