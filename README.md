@@ -2,7 +2,7 @@
 
 <img width="1268" height="667" alt="screenshot" src="https://github.com/user-attachments/assets/79296415-20f4-4b19-a34b-9bfdfc85a320" />
 <img width="1271" height="675" alt="screenshot3" src="https://github.com/user-attachments/assets/964de57e-5f2f-4820-9010-652ffee969d7" />
-
+![alt text](screenshot5-1.png)
 실시간 위치 정보를 기반으로 사용자들을 연결하고, 프로필 기반 매칭 및 채팅 기능을 제공하는 **위치 기반 소셜 네트워크 서비스(Location-Based SNS)** 프로젝트입니다.  
 카카오 지도 API를 활용하여 사용자 위치를 시각화하고, Node.js + React 기반의 풀스택 아키텍처로 설계되었습니다.
 
