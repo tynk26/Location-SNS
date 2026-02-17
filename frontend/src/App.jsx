@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 import KakaoMap from "./components/KakaoMap";
 import jessicaAvatar from "./assets/jessica.jpg";
 import michaelAvatar from "./assets/michael.jpg";
 import sominAvatar from "./assets/somin.jpg";
-// import UserList from "./components/UserList";
-// import RegisterForm from "./components/RegisterForm";
 import LeftPanel from "./components/LeftPanel";
 import MessengerPanel from "./components/MessengerPanel";
+
+const socket = io("http://localhost:5000");
 
 function App() {
   const defaultUsers = [
@@ -40,36 +41,69 @@ function App() {
   ];
 
   const [users, setUsers] = useState(defaultUsers);
+  const [currentUser, setCurrentUser] = useState(null);
+
   const [nickname, setNickname] = useState("");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState(null);
 
-  const [chatMessages, setChatMessages] = useState([
-    { from: "Jessica Kim", message: "안녕 마이클 😊", time: "10:00" },
-    {
-      from: "Michael Park",
-      message: "안녕 제시카! 오늘 날씨 진짜 좋다 ☀️",
-      time: "10:01",
-    },
-    {
-      from: "Jessica Kim",
-      message: "그러게! 시청 근처 카페 왔어 ☕",
-      time: "10:02",
-    },
-    {
-      from: "Michael Park",
-      message: "나도 근처야 1km 안쪽이야 😆",
-      time: "10:03",
-    },
-  ]);
-
+  const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const chatEndRef = useRef(null);
 
+  const ROOM_ID = "global_chat_room";
+
+  /* --------------------------
+     Restore Login
+  -------------------------- */
+  useEffect(() => {
+    const savedUser = localStorage.getItem("loggedInUser");
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      setCurrentUser(parsed);
+      setNickname(parsed.username);
+    }
+  }, []);
+
+  /* --------------------------
+     Socket Setup
+  -------------------------- */
+  useEffect(() => {
+    socket.emit("joinRoom", ROOM_ID);
+
+    socket.on("receiveMessage", (msg) => {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          from: msg.fromUser,
+          message: msg.message,
+          time: new Date().toLocaleTimeString().slice(0, 5),
+        },
+      ]);
+    });
+
+    return () => socket.off("receiveMessage");
+  }, []);
+
+  /* --------------------------
+     Auto Scroll
+  -------------------------- */
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
+  /* --------------------------
+     Login
+  -------------------------- */
+  const loginUser = (user) => {
+    setCurrentUser(user);
+    setNickname(user.username);
+    localStorage.setItem("loggedInUser", JSON.stringify(user));
+  };
+
+  /* --------------------------
+     Register
+  -------------------------- */
   const registerUser = () => {
     if (!nickname) return alert("닉네임 입력");
 
@@ -91,13 +125,25 @@ function App() {
     });
   };
 
+  /* --------------------------
+     Send Message
+  -------------------------- */
   const sendMessage = () => {
     if (!chatInput) return;
+    if (!currentUser) return alert("로그인 먼저 하세요");
+
+    const payload = {
+      roomId: ROOM_ID,
+      fromUser: currentUser.username,
+      message: chatInput,
+    };
+
+    socket.emit("sendMessage", payload);
 
     setChatMessages((prev) => [
       ...prev,
       {
-        from: "You",
+        from: currentUser.username,
         message: chatInput,
         time: new Date().toLocaleTimeString().slice(0, 5),
       },
@@ -108,6 +154,7 @@ function App() {
 
   return (
     <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
+      {/* LEFT PANEL */}
       <LeftPanel
         users={users}
         nickname={nickname}
@@ -117,15 +164,24 @@ function App() {
         setBio={setBio}
         setAvatar={setAvatar}
         registerUser={registerUser}
+        loginUser={loginUser}
+        currentUser={currentUser}
       />
 
+      {/* MAP IN CENTER */}
+      <div style={{ flex: 1 }}>
+        <KakaoMap users={users} />
+      </div>
+
+      {/* CHAT ON RIGHT */}
       <MessengerPanel
         chatMessages={chatMessages}
         chatInput={chatInput}
         setChatInput={setChatInput}
         sendMessage={sendMessage}
         chatEndRef={chatEndRef}
-        avatar={jessicaAvatar}
+        avatar={currentUser?.avatar}
+        currentUser={currentUser}
       />
     </div>
   );
