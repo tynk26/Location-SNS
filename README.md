@@ -186,12 +186,6 @@ index.html에 SDK 추가:
 - `sendMessage()` 호출 시:
   - `currentUser`가 없으면 “로그인 먼저” 경고
   - 있으면 `{ roomId, fromUser, message }` payload를 서버로 emit
-- 화면에 채팅이 중복되지 않으려면:
-  - **프론트에서 setChatMessages로 직접 append 하지 않고**
-  - 서버 broadcast로 `receiveMessage`가 들어올 때만 append 해야 함
-
-> 즉, “서버가 단 하나의 진실(source of truth)”이 되면 중복 메시지가 사라집니다.
-
 ---
 
 ### 2) `LeftPanel.jsx`가 하는 일 (등록/로그인 UI)
