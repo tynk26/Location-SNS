@@ -39,7 +39,7 @@
               ▼
 ┌──────────────────────────┐
 │       Database Layer     │
-│   (MongoDB - Planned)    │
+│         (MongoDB)        │
 └──────────────────────────┘
 🧩 Tech Stack
 Frontend
@@ -62,7 +62,7 @@ dotenv
 
 Socket.io
 
-MongoDB + Mongoose (planned)
+MongoDB + Mongoose 
 
 📌 Core Modules
 📍 1. Location-Based Discovery
